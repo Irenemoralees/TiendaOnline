@@ -3,7 +3,7 @@
 {% block contenido %}
             <div class="container">
                 <div class="row">
-                    <div class="col text-center"><h2>{{article.name}} Sección: {{article.type}}</h2></div>
+                    <div class="col text-center"><h2>{{article.name}} {{article.price}}</h2></div>
                 </div>
                 <div class="row">
                     <div class="col">
@@ -15,7 +15,10 @@
                         </div>
                         <div class="row">
                             <ul>
-                               {{article.price}}
+                            
+                               {% for category in article.categories %}
+                               <li> {{category.type}}  </li>
+                                 {% endfor %}
                             </ul>
                         </div>
                     </div>

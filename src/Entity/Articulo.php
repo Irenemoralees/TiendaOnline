@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticuloRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,17 +19,26 @@ class Articulo
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    private ?string $image = null;
+
+    #[ORM\Column(type:Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $image = null;
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'articles')]
+    private Collection $categories;
+
+    public function __construct()
+    {
+        $this->categories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -46,6 +57,19 @@ class Articulo
         return $this;
     }
 
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -54,18 +78,6 @@ class Articulo
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
 
         return $this;
     }
@@ -82,14 +94,26 @@ class Articulo
         return $this;
     }
 
-    public function getImage(): ?string
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
     {
-        return $this->image;
+        return $this->categories;
     }
 
-    public function setImage(string $image): static
+    public function addCategory(Category $category): static
     {
-        $this->image = $image;
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
 
         return $this;
     }
