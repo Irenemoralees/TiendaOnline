@@ -78,6 +78,7 @@ $article3->addCategory($category3);
 
 
 
+
         $doctrine-> persist($article);
         $doctrine-> persist($article2);
         $doctrine-> persist($article3);
@@ -85,6 +86,8 @@ $article3->addCategory($category3);
         $doctrine-> persist($category);
         $doctrine-> persist($category2);
         $doctrine-> persist($category3);
+        
+
 
         $doctrine->flush();
 
@@ -101,6 +104,12 @@ $article3->addCategory($category3);
             $article = $form-> getData();
             $doctrine ->persist($article);
             $doctrine ->flush();
+
+            $this -> addFlash(type: 'exito', message: 'Producto añadido correctamente');
+
+            //$form = $this-> createForm(ArticleType::class);   Esto es para resetear el formulario
+
+            return $this-> redirectToRoute(route: 'listArticle');
         }
 
         return $this-> render ('articles/newArticle.html.twig', ['articleForm' => $form]);

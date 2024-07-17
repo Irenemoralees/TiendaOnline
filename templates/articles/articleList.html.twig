@@ -1,7 +1,9 @@
 {% extends "articles/articleBase.html.twig" %}
 
 {% block contenido %}
-
+{% for mensaje in app.flashes('exito') %}
+<p> {{mensaje}} </p>
+{% endfor %}
 <h2>Listado de productos </h2>
     <div class="row row-cols-1 row-cols-md-2">
         {% for article in articles %}
