@@ -14,6 +14,19 @@
                         <h5 class="card-title">{{ article.name }}</h5>
                         <p class="card-text">{{ article.description }}</p>
                         <a href="{{ path ('getArticle', {'id': article.id}) }}" class="btn btn-primary">Más Info</a>
+
+                        {% if is_granted ('ROLE_ADMIN')%}
+                                    <a href="{{ path ('EditArticle', {'id': article.id}) }}" class="btn btn-primary">Editar</a>
+                                         <a href="{{ path ('DeleteArticle', {'id': article.id}) }}" class="btn btn-danger">Eliminar</a>
+
+                                         {% endif %}
+
+                                       
+                          {% if is_granted ('ROLE_USER') %}
+                                          <form action=" {{ path('add_to_card', {'id': article.id}) }} " method="post" style="display: inline;">
+                                          <button type="submit" class="btn btn-success">Añadir al carrito</button>
+                                          {% endif %}
+                    </form>
                     </div>
                 </div>
             </div>

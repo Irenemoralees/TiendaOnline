@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TiendaController extends AbstractController
@@ -114,4 +115,104 @@ $article3->addCategory($category3);
 
         return $this-> render ('articles/newArticle.html.twig', ['articleForm' => $form]);
     }
+
+    #[Route('/edit/article/{id}', name: 'EditArticle')]
+    public function EditArticle (EntityManagerInterface $doctrine, Request $request, $id){
+
+        $repository = $doctrine-> getRepository(Articulo::class);
+        $article = $repository-> find($id);
+        $form = $this-> createForm(ArticleType::class, $article);
+        
+        $form -> handleRequest($request);
+        if($form-> isSubmitted() && $form -> isValid()){
+            $article = $form-> getData();
+            $doctrine ->persist($article);
+            $doctrine ->flush();
+
+            $this -> addFlash(type: 'exito', message: 'Producto editado correctamente');
+
+            //$form = $this-> createForm(ArticleType::class);   Esto es para resetear el formulario
+
+            return $this-> redirectToRoute(route: 'listArticle');
+        }
+
+        return $this-> render ('articles/newArticle.html.twig', ['articleForm' => $form]);
+    }
+
+    #[Route('/delete/article/{id}', name: 'DeleteArticle')]
+    public function DeleteArticle (EntityManagerInterface $doctrine, Request $request, $id){
+
+        $repository = $doctrine-> getRepository(Articulo::class);
+        $article = $repository-> find($id);
+        $doctrine -> remove($article);
+        $doctrine -> flush();
+        $this -> addFlash(type: 'exito', message: 'Producto eliminado correctamente');
+       
+
+        return $this->  redirectToRoute(route: 'listArticle');
+    }
+
+   
+    
+  
+
+
+    #[Route('/add-to-cart/{id}', name: 'add_to_card')]
+    public function addToCart($id, EntityManagerInterface $doctrine, SessionInterface $session)
+    {
+        $repository = $doctrine->getRepository(Articulo::class);
+        $article = $repository->find($id);
+
+        if (!$article) {
+            throw $this->createNotFoundException('Artículo no encontrado');
+        }
+
+        $cart = $session->get('cart', []);
+        $cart[$id] = $article;
+        $session->set('cart', $cart);
+
+        return $this->redirectToRoute('listArticle');
+    }
+
+    #[Route('/show-cart', name: 'show_cart')]
+    public function showCart(SessionInterface $session)
+    {
+        $cart = $session->get('cart', []);
+        return $this->render('articles/cart_view.html.twig', ['articles' => $cart]);
+    
+    }
+
+    #[Route('/remove-from-cart/{id}', name: 'remove_from_cart')]
+public function removeFromCart(Request $request, $id)
+{
+    $session = $request->getSession();
+    $cart = $session->get('cart', []);
+
+    if (isset($cart[$id])) {
+        unset($cart[$id]);
+        $session->set('cart', $cart);
+    }
+
+    return $this->redirectToRoute('view_cart');
+}
+
+#[Route('/cart', name: 'view_cart')]
+public function viewCart(Request $request, EntityManagerInterface $doctrine)
+{
+    $session = $request->getSession();
+    $cart = $session->get('cart', []);
+
+    $articles = [];
+    foreach ($cart as $articleId => $quantity) {
+        $article = $doctrine->getRepository(Articulo::class)->find($articleId);
+        if ($article) {
+            $articles[] = $article;
+        }
+    }
+
+    return $this->render('articles/cart_view.html.twig', [
+        'articles' => $articles,
+    ]);
+}
+
 };
