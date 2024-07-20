@@ -1,0 +1,34 @@
+{#
+{% extends "articles/articleBase.html.twig" %}
+
+{% block title %}Lista de Compras{% endblock %}
+
+{% block body %}
+<h1>Lista de Compras</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Artículos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for purchase in purchases %}
+            <tr>
+                <td>{{ purchase.id }}</td>
+                <td>{{ purchase.user.username }}</td>
+                <td>
+                    <ul>
+                        {% for article in purchase.articulos %}
+                            <li>{{ article.name }} ({{ article.price }}€)</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+#}

@@ -20,10 +20,12 @@
 
                         {% if is_granted ('ROLE_ADMIN') %}
                         <a class="nav-link" href="{{ path ('InsertArticle')}}">Añadir productos</a>
+                         <a class="nav-link" href={#"{{ path ('admin_purchases')}}" #}>Control de compras</a> 
+
                         {% endif %}
 
                        {% if is_granted ('ROLE_USER') %}
-                        <a class="nav-link" href=" {{ path ('show_cart') }} ">Cesta</a>
+                        <a class="nav-link" href=" {{ path ('show_cart') }} ">Compra</a>
                         {% endif %}
                     </div>
                 </div>
